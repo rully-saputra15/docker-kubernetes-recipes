@@ -1,0 +1,52 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+namespace: dev
+
+namePrefix: dev-
+nameSuffix: -alpha
+
+commonLabels:
+  project: ecommerce-app
+  tier: backend
+  env: dev
+
+# images:
+#   - name: nginx
+#     newTag: 1.27.1
+
+replicas:
+  - name: nginx
+    count: 2 
+
+commonAnnotations:
+  team: growth
+  maintainer: 'growth@company.org'
+  repository: 'git-url'
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: feature-flag-config
+    literals:
+      - use_db=true
+      - expose_metrics=true
+  - name: db-init-config
+    files:
+      - some_other_key=db-init.js
+
+secretGenerator:
+  - name: local-config
+    envs:
+      - .env.local
+    type: Opaque
+
+patches:
+  - path: update-resource.patch.yaml
+  - path: use-latest-tag.patch.yaml
+  - path: use-stable-tag.patch.yaml # override the latest tag
+  - path: mount-db-init.patch.yaml

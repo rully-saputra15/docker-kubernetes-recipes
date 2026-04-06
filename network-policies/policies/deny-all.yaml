@@ -1,0 +1,11 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all
+spec:
+  podSelector: {} # if we use empty object then apply the network policies to all pods
+  policyTypes:
+    - Ingress
+    - Egress
+  # ingress:
+  # egress:
